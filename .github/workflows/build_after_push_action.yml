@@ -1,9 +1,10 @@
 name: Build and Scan
 
 on:
+  workflow_dispatch:
   push:
     tags:
-      - 'v*'
+    - 'v*'
 
 jobs:
   build:
