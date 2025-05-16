@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wybór lokalizacji</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #444;
+        }
+
+        form {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            top: 20px;
+            right: 20px;
+            background-color: #ff4d4d;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wybierz lokalizację</h1>
+    <form method="POST" action="/weather">
+        <label for="country">Kraj:</label>
+        <select name="country" id="country" required>
+            <option value="" disabled selected>Wybierz kraj</option>
+            {% for country in locations %}
+            <option value="{{ country }}">{{ country }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="city">Miasto:</label>
+        <select name="city" id="city" required>
+            <option value="" disabled selected>Wybierz miasto</option>
+        </select>
+        <br><br>
+        <button type="submit">Zatwierdź</button>
+    </form>
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+    <script>
+        const locationData = JSON.parse('{{ locations | tojson | safe }}');
+        const countrySelect = document.getElementById('country');
+        const citySelect = document.getElementById('city');
+
+        countrySelect.addEventListener('change', () => {
+            const selectedCountry = countrySelect.value;
+            citySelect.innerHTML = '<option value="" disabled selected>Wybierz miasto</option>';
+            if (locationData[selectedCountry]) {
+                locationData[selectedCountry].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
