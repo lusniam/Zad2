@@ -4,6 +4,7 @@
 FROM python:3.13-alpine AS builder
 
 LABEL org.opencontainers.image.authors="Maciej Luśnia"
+LABEL org.opencontainers.image.source="https://github.com/lusniam/pawcho-zad2"
 
 # Instalacja zależności
 RUN --mount=type=cache,target=/root/.cache apk add binutils gcc musl-dev linux-headers libffi-dev libxml2-dev libxslt-dev curl git openssh
