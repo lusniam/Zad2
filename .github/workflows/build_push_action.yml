@@ -2,11 +2,8 @@ name: Build and Scan
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -66,7 +63,7 @@ jobs:
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@0.30.0
         with:
-          image-ref: ghcr.io/${{ github.repository }}:latest
+          image-ref: ${ steps.meta.outputs.tags }
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
