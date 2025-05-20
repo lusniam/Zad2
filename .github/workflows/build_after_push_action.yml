@@ -58,7 +58,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
-          outputs: type=docker
+          outputs:
+            imageid: ${{ steps.meta.outputs.imageid }}
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
 
