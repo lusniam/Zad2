@@ -48,13 +48,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
@@ -72,4 +72,14 @@ jobs:
 
       - name: Push image to GitHub Container Registry
         if: success()
-        run: echo "Image pushed successfully."
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
+          cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
+          secrets: |
+            api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
