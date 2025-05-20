@@ -74,6 +74,6 @@ jobs:
       - name: Push image to GitHub Container Registry
         if: success()
         run: |
-          for tag in ${{ steps.meta.outputs.tags }}; do
+          for tag in ${{ fromJSON(steps.meta.outputs.json).tags }}; do
             docker push $tag
           done
