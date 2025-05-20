@@ -55,6 +55,8 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: false
+          outputs:
+            type: docker
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
