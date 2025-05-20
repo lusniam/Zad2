@@ -64,7 +64,7 @@ jobs:
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@0.30.0
         with:
-          image-ref: ${{ steps.meta.outputs.tags }}
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
           format: 'table'
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
