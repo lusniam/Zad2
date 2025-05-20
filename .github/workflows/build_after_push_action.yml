@@ -77,5 +77,4 @@ jobs:
           docker tag ${{ fromJSON(steps.meta.outputs.json).tags[0] }} ghcr.io/${{ github.repository }}:latest
           docker push ghcr.io/${{ github.repository }}:latest
           docker push ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-          docker push ghcr.io/${{ github.repository }}:cache
           echo "Image pushed successfully."
