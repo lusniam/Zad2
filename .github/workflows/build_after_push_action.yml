@@ -30,7 +30,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          flavor: latest=true
+          flavor: latest=false
           tags: |
             type=sha,priority=100,prefix=sha-,format=short
             type=semver,priority=200,pattern={{version}}
@@ -74,6 +74,8 @@ jobs:
       - name: Push image to GitHub Container Registry
         if: success()
         run: |
-          for tag in ${{ fromJSON(steps.meta.outputs.json).tags }}; do
-            docker push $tag
-          done
+          docker tag ${{ fromJSON(steps.meta.outputs.json).tags[0] }} ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          docker push ghcr.io/${{ github.repository }}:cache
+          echo "Image pushed successfully."
