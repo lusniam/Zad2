@@ -50,17 +50,13 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: false
-          outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.architecture }}
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
-
-      - name: Extract image for scan
-        run: docker load -i image.tar
 
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@0.30.0
@@ -71,9 +67,17 @@ jobs:
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
       
-      - name: Push images
+      - name: Build and push multi-arch Docker image
         if: ${{ success() }}
-        run: |
-          docker tag ${{ fromJSON(steps.meta.outputs.json).tags[0] }} ghcr.io/${{ github.repository }}:latest
-          docker push ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-          docker push ghcr.io/${{ github.repository }}:latest
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64
+          latest: true
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.architecture }}
+          cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
+          secrets: |
+            api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
