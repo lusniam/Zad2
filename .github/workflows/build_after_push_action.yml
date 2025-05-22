@@ -17,6 +17,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    matrix:
+      include:
+        - os: ubuntu-latest
+          arch: amd64
+        - os: ubuntu-latest
+          arch: arm64
 
     steps:
       - name: Checkout code
