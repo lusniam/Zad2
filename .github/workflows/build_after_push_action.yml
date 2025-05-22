@@ -52,11 +52,17 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64
           push: false
+          outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.architecture }}
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
+      
+      - name: Load Docker image for scanning
+        run: |
+          docker load -i image.tar
+          echo "Image loaded successfully."
 
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@0.30.0
