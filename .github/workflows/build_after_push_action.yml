@@ -58,6 +58,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: false
           outputs: type=docker,dest=image.tar
+          tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.platform }},type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.platform }}
           secrets: |
