@@ -54,7 +54,7 @@ jobs:
           push: false
           outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.architecture }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
@@ -80,10 +80,9 @@ jobs:
           context: .
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
-          latest: true
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.architecture }}
+          tags: ${{ steps.meta.outputs.tags }},ghcr.io/${{ github.repository }}:latest
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
