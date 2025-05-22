@@ -87,7 +87,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }},ghcr.io/${{ github.repository }}:latest
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ fromJSON(matrix.json).platforms[0] }},type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ fromJSON(matrix.json).platforms[1] }},type=registry,ref=ghcr.io/${{ github.repository }}:cache
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-amd64,type=registry,ref=ghcr.io/${{ github.repository }}:cache-arm64,type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
