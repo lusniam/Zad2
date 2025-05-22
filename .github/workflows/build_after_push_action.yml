@@ -18,9 +18,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      platforms:
-        - linux/amd64
-        - linux/arm64
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
 
     steps:
       - name: Checkout code
