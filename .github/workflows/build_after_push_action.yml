@@ -58,10 +58,9 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: false
           outputs: type=docker,dest=image.tar
-          tags: ${{ steps.meta.outputs.tags }}
-          cache-from:
-            - type=registry,ref=ghcr.io/${{ github.repository }}:cache
-            - type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.platform }}
+          cache-from: |
+            type=registry,ref=ghcr.io/${{ github.repository }}:cache
+            type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.platform }}
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.platform }}
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
@@ -89,10 +88,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }},ghcr.io/${{ github.repository }}:latest
-          cache-from:
-            - type=registry,ref=ghcr.io/${{ github.repository }}:cache
-            - type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ fromJSON(matrix).platforms)[0] }}
-            - type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ fromJSON(matrix).platforms)[1] }}
+          cache-from: |
+            type=registry,ref=ghcr.io/${{ github.repository }}:cache
+            type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ fromJSON(matrix.json).platforms)[0] }}
+            type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ fromJSON(matrix.json).platforms)[1] }}
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
