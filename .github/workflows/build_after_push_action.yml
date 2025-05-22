@@ -17,9 +17,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        architecture: [amd64, arm64]
 
     steps:
       - name: Checkout code
@@ -30,7 +27,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          flavor: latest=false
+          flavor: latest=true
           tags: |
             type=sha,priority=100,prefix=sha-,format=short
             type=semver,priority=200,pattern={{version}}
@@ -48,19 +45,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build Docker image for scanning
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile
-          platforms: linux/${{ matrix.architecture }}
+          platforms: linux/amd64,linux/arm64
           push: false
-          outputs: type=docker
+          outputs: type=docker,dest=image.tar
           tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache-${{ matrix.architecture }}
           cache-to: type=registry,mode=max,ref=ghcr.io/${{ github.repository }}:cache
           secrets: |
             api_key=${{ secrets.OPENWEATHERMAP_API_KEY }}
+
+      - name: Extract image for scan
+        run: docker load -i image.tar
 
       - name: Scan for vulnerabilities
         uses: aquasecurity/trivy-action@0.30.0
@@ -70,11 +70,10 @@ jobs:
           exit-code: '1'
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
-
-      - name: Push image to GitHub Container Registry
-        if: success()
+      
+      - name: Push images
+        if: ${{ success() }}
         run: |
           docker tag ${{ fromJSON(steps.meta.outputs.json).tags[0] }} ghcr.io/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository }}:latest
           docker push ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-          echo "Image pushed successfully."
+          docker push ghcr.io/${{ github.repository }}:latest
